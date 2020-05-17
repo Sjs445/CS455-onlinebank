@@ -92,6 +92,19 @@ require_once('config.php');
 				<p>* means it is required.
 				</p>
 			</div>
+
+			<form name="register">
+							<div class="pswRequirements">
+								<div id="message">
+									<h3>Password must contain the following:</h3>
+									<p id="length" class="invalid">Minimum <b>10 characters</b></p>
+									<p id="letter" class="invalid">A <b>lowercase</b> letter [a-z]</p>
+									<p id="capital" class="invalid">A <b>capital (uppercase)</b> letter [A-Z]</p>
+									<p id="number" class="invalid">A <b>number [0-9)]</b></p>
+									<p id="special" class="invalid">A <b>special character [!@#$%^&*( )]</b></p>
+								</div>
+ 							</div>
+						</form>
 			<br>
 			<br>
 			<br>
