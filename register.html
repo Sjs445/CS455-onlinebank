@@ -1,34 +1,106 @@
+<?php 
+require_once('config.php');
+ ?>
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
+<head>
+	<title>Payment Form</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<script>
+	//check to see if the two passwords match
+	function checkPassword(form) {
+		password1 = form.password1.value;
+		password2 = form.password2.value;
 
-		<title>Register</title>	
-	</head>
+		if (password1 != password2) {
+			alert('\nThe password did not match. Please try again.')
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+</script>
+</head>
+<body>
+<div>
+	<form action= "confirmation.html" method="post" onsubmit= "return checkPassword()">
+		<div class="container">
+			<h1>REGISTRATION</h1>
+			<p>Please fill in the information below.</p>
+			<div class = "register">
+			<strong>First Name*:</strong> <br/>
+			<input type="text" id= "firstname" name="firstname" value= "" required>
+			</div>
 
-		<body style = "background: url(https://download.hipwallpaper.com/desktop/1920/1080/39/73/6mVEKW.jpg)">
+			<div class = "register">
+			<strong>Last Name*:</strong> <br/>
+			<input type="text" id= "lastname" name="lastname" value= "" required>
+			</div>
 
-			<script type="text/javascript" src="../onlinebank.js"></script>
+			<div class = "register">
+			<strong>Address*:</strong> <br/>
+			<input type="text" id= "address" name="address" value= "" required>
+			</div>
 
-			<body oncontextmenu="return false">
-				<div class="body">
-					<div class="grad"></div>
-						<div class="header">
-							<p style = "font-family: sans-serif; font-size: 40px; color: white";>
-							Register New User
-							</p> 
-						</div>
-					<br>
-						<form name="register">
-							<div class="register">
-								<input type="text" placeholder="New Username" name="userid"><br>
-								<input type="password" placeholder="New Password" name="userid"><br>
-								<input type="password" placeholder="Repeat Password" name="userid"><br>
-							</div>
+			<div class = "register">
+			<strong>City*:</strong> <br/>
+			<input type="text" id= "city" name="city" value= "" required>
+			</div>
+
+			<div class = "register">
+			<strong>Zip Code*:</strong> <br/>
+			<input type="text" id="zip" maxlength= "5" name="zip" value= "" required>
+			</div>
+
+			<div class = "register">
+			<strong>Phone Number*:</strong> <br/>
+			<input type="tel" id= "phone" name="phone" pattern= "[0-9]{3}[0-9]{3}[0-9]{4}" required>
+			</div>
+
+			<div class  = "register">
+			<strong>Email*:</strong> <br/>
+			<input type="email" id= "email" name="email" value= "" required>
+			</div>
+
+			<div class  = "register">
+			<strong>Username*:</strong> <br/>
+			<input type="text" id= "username" name="username" size= "25" value= "" required>
+			</div>
+
+			<div class  = "register">
+			<strong>Password*:</strong> <br/>
+			<input type="password" id= "password1" name="password1" size= "25" value= "">
+			</div>
+
+			<div class  = "register">
+			<strong>Confirm Password*:</strong> <br/>
+			<input type="password" id="password2" name="password2" size= "25" value= "">
+			</div>
+
+			<br>
+			<br>
 			
 
-		</body>
+			<div class = "submit">
+				<input type="submit" id= "confirm" name="user" value= "REGISTER">
+				<br>
+				<br>
+			</div>
 
+			<div class = "register">
+				<p>* means it is required.
+				</p>
+			</div>
+			<br>
+			<br>
+			<br>
+			</div>
+			</div>
+			</div>
+		</div>
+	</form>
+</div>
 
-
+</body>
 </html>
