@@ -1,43 +1,90 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
+'use strict'
 
-		<title>Login</title>
-
-	</head>
-		<body style = "background: url(https://download.hipwallpaper.com/desktop/1920/1080/39/73/6mVEKW.jpg)">
-		</body>
-
-		<script type="text/javascript" src="../onlinebank.js"></script>
-
-		<body oncontextmenu="return false">
-			<div class="body">
-				<div class="grad"></div>
-					<div class="header">
-						<p style = "font-family: sans-serif; font-size: 40px; color: white";>
-							Welcome to Online Bank
-						</p>
-					</div>
-				<br>
-					<form name="login">
-						<div class="login">
-							<input type="text" placeholder="username" name="userid"><br>
-							<input type="password" placeholder="password" name="userid"><br>
-							<input type="button" onclick="check(this.form)" value="Login"/>
-						</div>
-						<div class="register">
-							<input type="button" value="Register"><br>
- 						</div>
-					</form>
-			</div>
-		</body>
+const xssFilters = require("xss-filters");
+const express = require("express");
+const fs = require("fs");
+const app = express();
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+//const csp = require("helmet-csp");
 
 
+function contains(password, allowedChars) {
+    for (i = 0; i < password.length; i++) {
+        let char = password.charAt(i);
+ 			if (allowedChars.indexOf(char) >= 0) 
+ 				return true;
+ 	}
+ 	return false;
+}
 
+function isStrongPassword(phrase){
+	let uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	let lowercase = "abcdefghijklmnopqrstuvwxyz";
+	let digits = "0123456789";
+	let splChars = "!@#$%^&*()";
+	let ucaseFlag = contains(phrase, uppercase);
+	let lcaseFlag = contains(phrase, lowercase);
+	let digitsFlag = contains(phrase, digits);
+	let splCharsFlag = contains(phrase, splChars);
+
+	if(phrase.length>=8 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag)
+   		return true;
+    else
+    	return false; 
+}
 
 
 
+app.use(cookieParser());
+
+app.post("/register", function(req, res){
+	if (isStrongPassword(req.body.password)) {
+		fs.writeFile('../login.txt', (req.body.username, req.body.password), (err) => {
+			if (err) throw err;
+		})
+	}
+	else {
+		alert("Password must meet requirements...");
+	}
+
+});
 
 
-</html>
+app.get("/login", function(req, res){
+	res.sendFile(__dirname+"/login.html");
+});
+
+// Read from text file of usernames and passwords
+// In this function, I want to add a feature where if the user selects "register on the login page
+// then another webpage will open with the boxes to creae a username and password.
+// So currently the link "should" be http://localhost/4000/login.
+// Then if user clicks on register (still need to implement that), then they will be 
+// redirected to http://localhost/4000/register
+app.post("/login", function(req, res) {
+	
+	//	Read the logins.txt file and parse into Array newData
+	let data = fs.readFileSync('../login.txt', {encoding:'utf8', flag:'r'});
+	let newData = data.split(";");
+	
+	if(newData[0]===req.body.username && newData[1]===req.body.password)
+	{
+		console.log("Authenticated!");
+
+		let randomNumber=Math.random().toString();
+		randomNumber=randomNumber.substring(2,randomNumber.length);
+
+
+		// Set the cookie session ID
+		// Date.now() + 10000 sets the expiration date of the cookie 300000 milliseconds (300 sec) from now
+		res.cookie('loggedin',randomNumber, { expires: new Date(Date.now() + 300000), httpOnly: false});
+		let pageHTML="<html><body bgcolor=white><h1>Welcome back: "+req.body.username+"!</h1><br><a href='/bank'>Bank</a></body></html>";
+		res.send(pageHTML);
+	}
+	else
+	{
+		alert("Invalid Username and/or Password");
+	}
+});
+
+app.listen(4000);
