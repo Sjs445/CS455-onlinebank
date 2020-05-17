@@ -53,6 +53,19 @@ app.post("/register", function(req, res){
 
 app.get("/login", function(req, res){
 	res.sendFile(__dirname+"/login.html");
+
+	let cookie = req.cookies['loggedin'];
+
+	//	If the user does not have a cookie
+	if(cookie === undefined)
+	{
+		//	Show them the login page
+		res.sendFile(__dirname+"/login.html");
+	}
+	else
+	{
+		//	send the bank app html file
+	}
 });
 
 // Read from text file of usernames and passwords
@@ -76,8 +89,8 @@ app.post("/login", function(req, res) {
 
 
 		// Set the cookie session ID
-		// Date.now() + 10000 sets the expiration date of the cookie 300000 milliseconds (300 sec) from now
-		res.cookie('loggedin',randomNumber, { expires: new Date(Date.now() + 300000), httpOnly: false});
+		// Date.now() + 180000 sets the expiration date of the cookie 180000 milliseconds (3 mins) from now
+		res.cookie('loggedin',randomNumber, { expires: new Date(Date.now() + 180000), httpOnly: true});
 		let pageHTML="<html><body bgcolor=white><h1>Welcome back: "+req.body.username+"!</h1><br><a href='/bank'>Bank</a></body></html>";
 		res.send(pageHTML);
 	}
