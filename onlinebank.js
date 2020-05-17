@@ -40,16 +40,6 @@ app.use(cookieParser());
 
 app.get("/register", function(req, res){
 	res.sendFile(__dirname+"/register.html");
-
-	let cookie = req.cookies['registering'];
-
-	if(cookie === undefined){
-		res.sendFile(__dirname+"/register.html");
-	}
-	else {
-		//send the login page
-		res.sendFile(__dirname+"/login.html");
-	}
 });
 
 app.post("/register", function(req, res){
@@ -65,22 +55,6 @@ app.post("/register", function(req, res){
 });
 
 
-app.get("/login", function(req, res){
-	res.sendFile(__dirname+"/login.html");
-
-	let cookie = req.cookies['loggedin'];
-
-	//	If the user does not have a cookie
-	if(cookie === undefined)
-	{
-		//	Show them the login page
-		res.sendFile(__dirname+"/login.html");
-	}
-	else
-	{
-		//	send the bank app html file
-	}
-});
 
 // Read from text file of usernames and passwords
 // In this function, I want to add a feature where if the user selects "register on the login page
@@ -113,5 +87,22 @@ app.post("/login", function(req, res) {
 		alert("Invalid Username and/or Password");
 	}
 });
+
+app.get("/", function(req, res){
+
+	let cookie = req.cookies['loggedin'];
+
+	//	If the user does not have a login cookie
+	if(cookie === undefined)
+	{
+		//	Show them the startup page
+		res.sendFile(__dirname+"/startup.html");
+	}
+	else
+	{
+		// Send them to the bank app
+	}
+});
+
 
 app.listen(4000);
