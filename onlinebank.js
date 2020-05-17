@@ -51,6 +51,10 @@ app.post("/register", function(req, res){
 });
 
 
+app.get("/login", function(req, res){
+	res.sendFile(__dirname+"/login.html");
+});
+
 // Read from text file of usernames and passwords
 // In this function, I want to add a feature where if the user selects "register on the login page
 // then another webpage will open with the boxes to creae a username and password.
