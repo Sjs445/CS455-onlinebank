@@ -52,6 +52,11 @@ app.post("/register", function(req, res){
 
 
 // Read from text file of usernames and passwords
+// In this function, I want to add a feature where if the user selects "register on the login page
+// then another webpage will open with the boxes to creae a username and password.
+// So currently the link "should" be http://localhost/4000/login.
+// Then if user clicks on register (still need to implement that), then they will be 
+// redirected to http://localhost/4000/register
 app.post("/login", function(req, res) {
 	
 	//	Read the logins.txt file and parse into Array newData
