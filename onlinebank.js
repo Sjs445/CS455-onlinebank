@@ -40,6 +40,16 @@ app.use(cookieParser());
 
 app.get("/register", function(req, res){
 	res.sendFile(__dirname+"/register.html");
+
+	let cookie = req.cookies['registering'];
+
+	if(cookie === undefined){
+		res.sendFile(__dirname+"/register.html");
+	}
+	else {
+		//send the login page
+		res.sendFile(__dirname+"/login.html");
+	}
 });
 
 app.post("/register", function(req, res){
