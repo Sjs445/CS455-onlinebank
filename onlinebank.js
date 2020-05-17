@@ -38,6 +38,10 @@ function isStrongPassword(phrase){
 
 app.use(cookieParser());
 
+app.get("/register", function(req, res){
+	res.sendFile(__dirname+"/register.html");
+});
+
 app.post("/register", function(req, res){
 	if (isStrongPassword(req.body.password)) {
 		fs.writeFile('../login.txt', (req.body.username, req.body.password), (err) => {
