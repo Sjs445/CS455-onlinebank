@@ -43,8 +43,8 @@ app.get("/register", function(req, res){
 });
 
 app.post("/register", function(req, res){
-	if (isStrongPassword(req.body.password)) {
-		fs.writeFile('../login.txt', (req.body.username, req.body.password), (err) => {
+	if (isStrongPassword(req.body.password2)) {
+		fs.writeFile('../login.txt', (req.body.username, req.body.password2), (err) => {
 			if (err) throw err;
 		})
 	}
@@ -68,7 +68,7 @@ app.post("/login", function(req, res) {
 	let data = fs.readFileSync('../login.txt', {encoding:'utf8', flag:'r'});
 	let newData = data.split(";");
 	
-	if(newData[0]===req.body.username && newData[1]===req.body.password)
+	if(newData[0]===req.body.username && newData[1]===req.body.password2)
 	{
 		console.log("Authenticated!");
 
