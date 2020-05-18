@@ -10,6 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //const csp = require("helmet-csp");
 
 
+
 function contains(password, allowedChars) {
     for ( let i = 0; i < password.length; i++) {
         let char = password.charAt(i);
@@ -52,7 +53,7 @@ app.post("/register", function(req, res){
 	{
 		if (isStrongPassword(password2)) {
 
-			fs.writeFile('login.txt', (username+";"+password2), {flag: 'a+'}, (err) => {
+			fs.writeFile('login.txt', (username+";"+password2+";"), {flag: 'a+'}, (err) => {
 				if (err) throw err;
 			})
 			res.send("User created!<br><a href='/'>Return to homepage</a>");
@@ -77,28 +78,38 @@ app.post("/register", function(req, res){
 // redirected to http://localhost/4000/register
 app.post("/login", function(req, res) {
 
-	let data = fs.readFileSync('./login.txt', 
-			{encoding:'utf8', flag:'r'}); 
-
-	let newData = data.split(";");
-	
-	if(newData[0]===req.body.userid && newData[1]===req.body.password)
+	fs.readFile('./login.txt',{encoding:'utf8', flag:'r'}, function(error, data)
 	{
-		console.log("Authenticated!");
+		if(error)
+		{
+			console.log(error);
+			return;
+		}
 
-		let randomNumber=Math.random().toString();
-		randomNumber=randomNumber.substring(2,randomNumber.length);
+		let newData = data.split(";");
+
+		for(let i=0; i<(newData.length-1); i+=2)
+		{
+			if(newData[i]===req.body.userid && newData[i+1]===req.body.password)
+			{
+				console.log("Authenticated!");
+
+				let randomNumber=Math.random().toString();
+				randomNumber=randomNumber.substring(2,randomNumber.length);
 
 
-		// Set the cookie session ID
-		// Date.now() + 180000 sets the expiration date of the cookie 180000 milliseconds (3 mins) from now
-		res.cookie('loggedin',randomNumber, { expires: new Date(Date.now() + 180000), httpOnly: true});
-		res.sendFile(__dirname+"/bank.html");
-	}
-	else
-	{
+				// Set the cookie session ID
+				// Date.now() + 180000 sets the expiration date of the cookie 180000 milliseconds (3 mins) from now
+				res.cookie('loggedin',randomNumber, { expires: new Date(Date.now() + 180000), httpOnly: true});
+				res.sendFile(__dirname+"/bank.html");
+				return;
+			}
+		}
 		res.send("Invalid username or password!<br><a href='/'>Try again?</a>");
-	}
+	
+	}); 
+
+	
 });
 
 app.get("/", function(req, res){
@@ -122,7 +133,6 @@ app.post("/logout", function(req, res){
 	res.clearCookie('loggedin');
 	res.send("Logged out!<br><br><a href='/'>Login</a>");
 })
-
 
 
 app.listen(4000);
