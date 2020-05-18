@@ -76,17 +76,11 @@ app.post("/register", function(req, res){
 // Then if user clicks on register (still need to implement that), then they will be 
 // redirected to http://localhost/4000/register
 app.post("/login", function(req, res) {
-	let loginInfo;
-	//	Read the logins.txt file and parse into Array newData
-	fs.readFile('login.txt', (err, data) => {
-		if(err){
-			console.error(err);
-			return;
-		}
-		loginInfo=data;
-	});
 
-	let newData = loginInfo.split(";");
+	let data = fs.readFileSync('./login.txt', 
+			{encoding:'utf8', flag:'r'}); 
+
+	let newData = data.split(";");
 	
 	if(newData[0]===req.body.userid && newData[1]===req.body.password)
 	{
@@ -103,7 +97,7 @@ app.post("/login", function(req, res) {
 	}
 	else
 	{
-		console.log("Invalid Username and/or Password");
+		res.send("Invalid username or password!<br><a href='/'>Try again?</a>");
 	}
 });
 
@@ -120,8 +114,15 @@ app.get("/", function(req, res){
 	else
 	{
 		// Send them to the bank app
+		res.sendFile(__dirname+"/bank.html")
 	}
 });
+
+app.post("/logout", function(req, res){
+	res.clearCookie('loggedin');
+	res.send("Logged out!<br><br><a href='/'>Login</a>");
+})
+
 
 
 app.listen(4000);
