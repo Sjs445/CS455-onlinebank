@@ -6,11 +6,12 @@ const fs = require("fs");
 const app = express();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }));
 //const csp = require("helmet-csp");
 
 
 function contains(password, allowedChars) {
-    for (i = 0; i < password.length; i++) {
+    for ( let i = 0; i < password.length; i++) {
         let char = password.charAt(i);
  			if (allowedChars.indexOf(char) >= 0) 
  				return true;
@@ -43,15 +44,27 @@ app.get("/register", function(req, res){
 });
 
 app.post("/register", function(req, res){
-	if (isStrongPassword(req.body.password2)) {
-		fs.writeFile('../login.txt', (req.body.username, req.body.password2), (err) => {
-			if (err) throw err;
-		})
-	}
-	else {
-		alert("Password must meet requirements...");
-	}
+	let username = req.body.username;
+	let password1 = req.body.password1;
+	let password2 = req.body.password2;
+	
+	if(password1 === password2)
+	{
+		if (isStrongPassword(password2)) {
 
+			fs.writeFile('login.txt', (username+";"+password2), {flag: 'a+'}, (err) => {
+				if (err) throw err;
+			})
+			res.send("User created!<br><a href='/'>Return to homepage</a>");
+		}
+		else {
+			console.log("Password must meet requirements...");
+		}
+	}
+	else
+	{
+		res.send("Passwords do not match!");
+	}
 });
 
 
@@ -63,12 +76,19 @@ app.post("/register", function(req, res){
 // Then if user clicks on register (still need to implement that), then they will be 
 // redirected to http://localhost/4000/register
 app.post("/login", function(req, res) {
-	
+	let loginInfo;
 	//	Read the logins.txt file and parse into Array newData
-	let data = fs.readFileSync('../login.txt', {encoding:'utf8', flag:'r'});
-	let newData = data.split(";");
+	fs.readFile('login.txt', (err, data) => {
+		if(err){
+			console.error(err);
+			return;
+		}
+		loginInfo=data;
+	});
+
+	let newData = loginInfo.split(";");
 	
-	if(newData[0]===req.body.username && newData[1]===req.body.password2)
+	if(newData[0]===req.body.userid && newData[1]===req.body.password)
 	{
 		console.log("Authenticated!");
 
@@ -79,12 +99,11 @@ app.post("/login", function(req, res) {
 		// Set the cookie session ID
 		// Date.now() + 180000 sets the expiration date of the cookie 180000 milliseconds (3 mins) from now
 		res.cookie('loggedin',randomNumber, { expires: new Date(Date.now() + 180000), httpOnly: true});
-		let pageHTML="<html><body bgcolor=white><h1>Welcome back: "+req.body.username+"!</h1><br><a href='/bank'>Bank</a></body></html>";
-		res.send(pageHTML);
+		res.sendFile(__dirname+"/bank.html");
 	}
 	else
 	{
-		alert("Invalid Username and/or Password");
+		console.log("Invalid Username and/or Password");
 	}
 });
 
