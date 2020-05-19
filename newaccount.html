@@ -10,9 +10,15 @@
 				<<h1 style="color:white">Open New Account</h1><br><br>
 
 					<label for='Account Name' style="color:white">Account Name</label>";
-					<input type='text' id='accountName' name='accountname'><br><br>";
+					<input type='text' id='accountName' name='accountName'><br><br>";
+
 					<label for='Account Type' style="color:white">Account Type</label>";
-					<input type='text' id='accountType' name='accounttype'><br><br>";
+					<input type='text' id='accountType' name='accountType'><br><br>";
+
+					<label for="Initial Balance" style="color:white">Initial Balance (Max $25,000.00)</label>;
+					<input type='number' step='0.01' min='0' max='25000' id='initialBalance' name='initialBalance'><br><br>;
+
+
 
 					
 					<input type='submit' name="OpenNewAccount" value='Submit'>
