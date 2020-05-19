@@ -36,9 +36,67 @@ function isStrongPassword(phrase){
     	return false; 
 }
 
-
-
 app.use(cookieParser());
+
+
+
+//======================================================================
+//Each of these post functions should be related to each bank feature
+
+
+
+
+app.post("/View", function(req, res){
+	let accountName = req.body.name;
+});
+
+app.post("/Deposit", function(req, res){
+	let addBalance = req.body.depsoit;
+
+});
+
+app.post("/Withdraw", function(req, res){
+	
+});
+
+app.post("/Transfer", function(req, res){
+	
+});
+
+//For this I (Drew) was thinking of appending the user's account name 
+//and account type (checking/savings) at the end of their username and password
+
+//this is all I have for now
+app.post("/OpenNewAccount", function(req, res){
+	let pageStr = "alert('Acount Type Registered!')";
+	let accountName = req.body.accountname;
+	let accountType = req.body.accounttype;
+	let allLines = fs.readFileSync('./users.txt').toString().split(';');
+
+	allLines.forEach(function (line) {
+		let newLine = line + accountName + accountType;
+		fs.appendFileSync("./users.txt", newLine.toString() + "\n");
+	});
+
+	allLines = fs.readFileSync('./users.txt').toString().split("\n");
+
+	console.log("test account info appended");
+});
+
+
+app.post("/RemoveAccount", function(req, res){
+	
+});
+
+//======================================================================
+
+
+
+app.get("/bank", function(req,res){
+	res.sendFile(__dirname+"/bank.html");
+});
+
+
 
 app.get("/register", function(req, res){
 	res.sendFile(__dirname+"/register.html");
@@ -53,13 +111,14 @@ app.post("/register", function(req, res){
 	{
 		if (isStrongPassword(password2)) {
 
-			fs.writeFile('login.txt', (username+";"+password2+";"), {flag: 'a+'}, (err) => {
+			fs.writeFile('users.txt', (username+";"+password2+";"), {flag: 'a+'}, (err) => {
 				if (err) throw err;
 			})
 			res.send("User created!<br><a href='/'>Return to homepage</a>");
 		}
 		else {
 			console.log("Password must meet requirements...");
+			res.send(__dirname+"/register.html")
 		}
 	}
 	else
@@ -78,7 +137,7 @@ app.post("/register", function(req, res){
 // redirected to http://localhost/4000/register
 app.post("/login", function(req, res) {
 
-	fs.readFile('./login.txt',{encoding:'utf8', flag:'r'}, function(error, data)
+	fs.readFile('./users.txt',{encoding:'utf8', flag:'r'}, function(error, data)
 	{
 		if(error)
 		{
