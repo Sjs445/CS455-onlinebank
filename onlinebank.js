@@ -3,6 +3,7 @@
 const xssFilters = require("xss-filters");
 const express = require("express");
 const fs = require("fs");
+const readline = require("readline");
 const app = express();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
@@ -72,19 +73,23 @@ app.get("/OpenNewAccount", function(req, res){
 });
 
 app.post("/OpenNewAccount", function(req, res){
+	let name = req.body.accountName;
+	let type = req.body.accountType;
+	let initialBalance = req.body.initialBalance;
+	let filePath = __dirname+"/users.txt"
 
-	let accountName = req.body.accountname;
-	let accountType = req.body.accounttype;
 
-	let allLines = fs.readFileSync('./users.txt').toString().split(';');
+	//Read /users.txt file line by line
+	let lineReader = require('readline').createInterface({
+    	input: require('fs').createReadStream(filePath)
+    });
 
-	allLines.forEach(function (line) {
-		let newLine = line + accountName + accountType;
-		fs.appendFileSync("./users.txt", newLine.toString() + ";");
+	lineReader.on('line', function (line) {
+		let newLine = line.replace(line, line+name+";"+type+";"+initialBalance+";");
+		fs.writeFile('accounts.txt', newLine, (err) => {
+			if (err) throw err;
+		});
 	});
-
-	allLines = fs.readFileSync('./users.txt').toString().split(";");
-
 
 
 	res.send("Account Registerd!<br><a href='/'>Return to Homepage</a>");
