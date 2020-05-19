@@ -73,26 +73,44 @@ app.get("/OpenNewAccount", function(req, res){
 });
 
 app.post("/OpenNewAccount", function(req, res){
+	let currentUser = req.body.username;
 	let name = req.body.accountName;
 	let type = req.body.accountType;
 	let initialBalance = req.body.initialBalance;
 	let filePath = __dirname+"/users.txt"
 
 
-	//Read /users.txt file line by line
-	let lineReader = require('readline').createInterface({
-    	input: require('fs').createReadStream(filePath)
-    });
+	// allLines should read each line separated by "\n"
+	fs.readFile('users.txt', (err, data)=>{
+		if (err) throw err;
 
-	lineReader.on('line', function (line) {
-		let newLine = line.replace(line, line+name+";"+type+";"+initialBalance+";");
-		fs.writeFile('accounts.txt', newLine, (err) => {
-			if (err) throw err;
-		});
+		// array holds each user's username+password separated by a "\n"
+		let array = data.toString().split("\n");
+
+		
+
+		// iterate through each index (in this case through each user)
+		// and append their account info
+		// check which user is logged on and append the info to that account
+		for (let i = 0; i < array.length-1; ++i){
+			if(req.body.hasClass('loggedin')) {
+				let newLine = array[i]+name+";"+type+";"+initialBalance+";"+"\n";
+
+				// then write to a new file called accounts.txt
+				fs.writeFileSync('accounts.txt', newLine, {flag: 'a+'}, (err) =>{
+					if (err) throw err;
+				});
+			}
+			else {
+				;
+			}
+				
+		}
+		
 	});
 
 
-	res.send("Account Registerd!<br><a href='/'>Return to Homepage</a>");
+	res.send("Account Registerd!<br><a href='/'>Return to Homepage</a><br><br><a href='/OpenNewAccount'>Add Another Account</a><br>");
 });
 
 
@@ -123,7 +141,7 @@ app.post("/register", function(req, res){
 	{
 		if (isStrongPassword(password2)) {
 
-			fs.writeFile('users.txt', (username+";"+password2+";"), {flag: 'a+'}, (err) => {
+			fs.writeFile('users.txt', (username+";"+password2+";"+"\n"), {flag: 'a+'}, (err) => {
 				if (err) throw err;
 			})
 			res.send("User created!<br><a href='/'>Return to homepage</a>");
