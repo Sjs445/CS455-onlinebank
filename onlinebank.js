@@ -67,20 +67,27 @@ app.post("/Transfer", function(req, res){
 //and account type (checking/savings) at the end of their username and password
 
 //this is all I have for now
+app.get("/OpenNewAccount", function(req, res){
+	res.sendFile(__dirname+"/newaccount.html");
+});
+
 app.post("/OpenNewAccount", function(req, res){
-	let pageStr = "alert('Acount Type Registered!')";
+
 	let accountName = req.body.accountname;
 	let accountType = req.body.accounttype;
+
 	let allLines = fs.readFileSync('./users.txt').toString().split(';');
 
 	allLines.forEach(function (line) {
 		let newLine = line + accountName + accountType;
-		fs.appendFileSync("./users.txt", newLine.toString() + "\n");
+		fs.appendFileSync("./users.txt", newLine.toString() + ";");
 	});
 
-	allLines = fs.readFileSync('./users.txt').toString().split("\n");
+	allLines = fs.readFileSync('./users.txt').toString().split(";");
 
-	console.log("test account info appended");
+
+
+	res.send("Account Registerd!<br><a href='/'>Return to Homepage</a>");
 });
 
 
