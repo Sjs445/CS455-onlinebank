@@ -1,1 +1,1 @@
-name;P@ssw0rdP@ssw0rd;;undefined;undefined;100;
+name;P@ssw0rdP@ssw0rd;test;checking;100;
