@@ -56,8 +56,52 @@ app.post("/View", function(req, res){
 	let accountName = req.body.name;
 });
 
-app.post("/Deposit", function(req, res){
-	let addBalance = req.body.depsoit;
+app.get("/Deposit", function(req, res){
+	let pageStr = "<!DOCTYPE html>"
+	pageStr += "<html>"
+	pageStr += "<head>"
+	pageStr += "<title>DEPOSIT</title>"
+	pageStr += "<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">"
+	pageStr += "<script>"
+	pageStr += "function checkAmount(form){"
+	pageStr += "amount = form.deposit.value;"
+	pageStr += "if (amount < 0 || amount > 9999) {"
+	pageStr += "alert('\nPlease enter an amount between 0 and 9999 dollars. ')"
+	pageStr += "return false;"
+	pageStr += "}"
+	pageStr += "else{"
+	pageStr += "return true;"
+	pageStr += "}"
+	pageStr += "}"
+	pageStr += "</script>"
+	pageStr += "</head>"
+	pageStr += "<body style = "background: url(https://download.hipwallpaper.com/desktop/1920/1080/39/73/6mVEKW.jpg)">"
+	pageStr += "<div>"
+	pageStr += "<form action= "/Deposit" method= "POST" onsubmit= "return checkAmount()">"
+	pageStr += "<div class= "container">"
+	pageStr += "<h1 style="color:white">DEPOSIT</h1><br><br>"
+	pageStr += "<p style="color:white">Please select an account.</p>"
+	pageStr += "<div class= "accounts">"
+	pageStr += "<select name= "Account" placeholder= "Account" required><option>Account 1</option><option>Account 2</option><option>Account 3</option></select>"
+	pageStr += "</div>"
+	pageStr += "<br>"
+	pageStr += "<br>"
+	pageStr += "<p style="color:white">Please enter the amount of the deposit.</p>"
+	pageStr += "<div class= "amount" style ="color:white">"
+	pageStr += "$<input type="text" id= "deposit" name="deposit" min= "0" max="9999" value= "" required>"
+	pageStr += "<br>"
+	pageStr += "<br>"
+	pageStr += "</div>"
+	pageStr += "<div class = "submit">"
+	pageStr += "<input type="submit" id= "confirm" name="done" value= "Cofirm">"
+	pageStr += "</div>"
+	pageStr += "</div>""
+	pageStr += "</form>"
+	pageStr += "</div>"
+	pageStr += "</body>"
+	pageStr += "</html>"
+
+	res.send(pageStr)
 
 });
 
