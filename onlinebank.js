@@ -78,11 +78,11 @@ app.get("/OpenNewAccount", function(req, res){
 });
 
 app.post("/OpenNewAccount", function(req, res){
-	let currentUser = req.body.username;
+	let currentUser = req.session.userid;
 	let name = req.body.accountName;
 	let type = req.body.accountType;
 	let initialBalance = req.body.initialBalance;
-	let filePath = __dirname+"/users.txt"
+	//let filePath = __dirname+"/users.txt"; commented this out since we're using .json
 	console.log(req.session.userid);
 
 	
@@ -93,27 +93,21 @@ app.post("/OpenNewAccount", function(req, res){
 	fs.readFile('users.json', (err, data)=>{
 		if (err) throw err;
 
-		// array holds each user's username+password separated by a "\n"
-		let array = data.toString().split("\n");
-
-		
-
+		let newData = JSON.parse(data);
 		// iterate through each index (in this case through each user)
 		// and append their account info
 		// check which user is logged on and append the info to that account
-		for (let i = 0; i < array.length-1; ++i){
-			if(req.body.hasClass('loggedin')) {
-				let newLine = array[i]+name+";"+type+";"+initialBalance+";"+"\n";
-
-				// then write to a new file called accounts.json
-				fs.writeFileSync('accounts.json', newLine, {flag: 'a+'}, (err) =>{
+		for(let i=0; i<(newData.users.length); i++)
+		{
+			if(newData.users[i].id === currentUser)
+			{
+				console.log(newData);
+				newData.users[i].accounts.push({name, type, initialBalance});
+				fs.writeFile('./users.json', (JSON.stringify(newData)), (err) => {
 					if (err) throw err;
 				});
+				console.log("test");
 			}
-			else {
-				;
-			}
-				
 		}
 		
 	});
