@@ -93,7 +93,7 @@ app.get("/Deposit", function(req, res){
 	pageStr += "<br>"
 	pageStr += "</div>"
 	pageStr += "<div class = "submit">"
-	pageStr += "<input type="submit" id= "confirm" name="done" value= "Cofirm">"
+	pageStr += "<input type="submit" id= "confirm" name="done" value= "Confirm">"
 	pageStr += "</div>"
 	pageStr += "</div>""
 	pageStr += "</form>"
