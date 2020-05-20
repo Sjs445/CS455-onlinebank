@@ -99,7 +99,7 @@ app.post("/View", function(req, res){
 	
 });
 
-app.get("/Deposit", function(req, res){
+app.post("/Deposit", function(req, res){
 	let currentUser = req.session.userid;
 
 	fs.readFile('users.json', (err, data) => {
@@ -137,9 +137,9 @@ app.get("/Deposit", function(req, res){
 
 				//this for loop counts how many accounts a user has and provides k amount of choices on the drop bar
 				for(let i=0; i<(newData.users.length); i++) {
-					for (let j = 0, k = 1; j<(newData.users[i].accounts.length); j++, k++){
+					for (let j = 0, k = j+1; j<(newData.users[i].accounts.length); j++, k++){
 						if(newData.users[i].id === currentUser){
-							pageStr += "<option>Account " + k + "</option>";
+							pageStr += "<option>Account " + newData.users[i].accounts[j].name + "</option>";
 						}
 					}
 				}	
@@ -162,8 +162,10 @@ app.get("/Deposit", function(req, res){
 				//this for loop iterates through a user's accounts and increments their deposit to the account they chose. 
 				for(let i=0; i<(newData.users.length); i++) {
 					for (let j = 0; j<(newData.users[i].accounts.length); j++){
-						if(newData.users[i].id === currentUser){
-							newData.user[i].accounts[Account].initialBalance += req.body.deposit;
+						if(newData.users[i].id === currentUser){	
+							newData.users[i].accounts[req.body.Account].initialBalance += req.body.deposit.value;
+
+
 						}
 					}
 				}
@@ -175,7 +177,7 @@ app.get("/Deposit", function(req, res){
 
 
 
-				fs.writeFile('/users.json', JSON.stringify(newData), (err) => {
+				fs.writeFile('users.json', JSON.stringify(newData), (err) => {
 					if (err) throw err;
 				});
 
@@ -183,7 +185,6 @@ app.get("/Deposit", function(req, res){
 		}
 	});
 });
-
 app.post("/Withdraw", function(req, res){
 	
 });
