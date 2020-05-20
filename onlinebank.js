@@ -11,7 +11,7 @@ const sessions = require('client-sessions');
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
-//const csp = require("helmet-csp");
+const csp = require("helmet-csp");
 
 // The session settings middleware	
 app.use(sessions({
@@ -22,6 +22,12 @@ app.use(sessions({
 	httpOnly: true,
   })); 
   
+app.use(csp({
+	directives:{
+		defaultSrc: ["'self'"],
+		scriptSrc: ["'self'"],
+	}
+}))
 
 function contains(password, allowedChars) {
     for ( let i = 0; i < password.length; i++) {
@@ -160,18 +166,15 @@ app.get("/OpenNewAccount", function(req, res){
 });
 
 app.post("/OpenNewAccount", function(req, res){
-	let currentUser = req.session.userid;
-	let name = req.body.accountName;
-	let type = req.body.accountType;
-	let initialBalance = req.body.initialBalance;
-	//let filePath = __dirname+"/users.txt"; commented this out since we're using .json
-	console.log(req.session.userid);
 
-	
+	let currentUser = req.session.userid;
+	let name = xssFilters.inHTMLData(req.body.accountName);
+	let type = xssFilters.inHTMLData(req.body.accountType);
+	let initialBalance = xssFilters.inHTMLData(req.body.initialBalance);
+
 	let filePath = __dirname+"/users.json"
 
 
-	// allLines should read each line separated by "\n"
 	fs.readFile('users.json', (err, data)=>{
 		if (err) throw err;
 
@@ -188,7 +191,6 @@ app.post("/OpenNewAccount", function(req, res){
 				fs.writeFile('./users.json', (JSON.stringify(newData)), (err) => {
 					if (err) throw err;
 				});
-				console.log("test");
 			}
 		}
 		
@@ -218,9 +220,9 @@ app.get("/register", function(req, res){
 });
 
 app.post("/register", function(req, res){
-	let username = req.body.username;	//	We will need to filter this data before processing
-	let password1 = req.body.password1;
-	let password2 = req.body.password2;
+	let username = xssFilters.inHTMLData(req.body.username);
+	let password1 = xssFilters.inHTMLData(req.body.password1);
+	let password2 = xssFilters.inHTMLData(req.body.password2);
 	
 	if(password1 === password2)
 	{
@@ -254,7 +256,6 @@ app.post("/login", function(req, res) {
 
 	fs.readFile('./users.json',{encoding:'utf8', flag:'r'}, function(error, data)
 	{
-		//	Still need to sanitize user inputs 
 		if(error)
 		{
 			console.log(error);
@@ -265,7 +266,7 @@ app.post("/login", function(req, res) {
 
 		for(let i=0; i<(newData.users.length); i++)
 		{
-			if(newData.users[i].id === req.body.userid && newData.users[i].password===req.body.password)
+			if(newData.users[i].id === xssFilters.inHTMLData(req.body.userid) && newData.users[i].password===xssFilters.inHTMLData(req.body.password))
 			{
 				console.log("Authenticated!");
 
