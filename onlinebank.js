@@ -133,13 +133,14 @@ app.post("/Deposit", function(req, res){
 				pageStr += "								<select name = 'Account' placeholder='Account' required>"
 
 				let newData = JSON.parse(data);
-
+				let k = 0;
 
 				//this for loop counts how many accounts a user has and provides k amount of choices on the drop bar
 				for(let i=0; i<(newData.users.length); i++) {
-					for (let j = 0, k = j+1; j<(newData.users[i].accounts.length); j++, k++){
-						if(newData.users[i].id === currentUser){
-							pageStr += "<option>Account " + newData.users[i].accounts[j].name + "</option>";
+					for (let j = 0; j<(newData.users[i].accounts.length); j++){ 	
+						if(newData.users[i].id === currentUser){								
+							pageStr += "<option>" + newData.users[i].accounts[j].name + "</option>";					
+							k = j;	//use k as a carry variable of which account in the arry of accounts to a user
 						}
 					}
 				}	
@@ -163,7 +164,7 @@ app.post("/Deposit", function(req, res){
 				for(let i=0; i<(newData.users.length); i++) {
 					for (let j = 0; j<(newData.users[i].accounts.length); j++){
 						if(newData.users[i].id === currentUser){	
-							newData.users[i].accounts[req.body.Account].initialBalance += req.body.deposit.value;
+							newData.users[i].accounts[k].initialBalance += req.body.deposit;
 
 
 						}
@@ -181,10 +182,11 @@ app.post("/Deposit", function(req, res){
 					if (err) throw err;
 				});
 
-				res.send(pageStr);
+			res.send(pageStr);
 		}
 	});
 });
+
 app.post("/Withdraw", function(req, res){
 	
 });
