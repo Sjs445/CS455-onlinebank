@@ -42,7 +42,7 @@ function isStrongPassword(phrase){
 	let digitsFlag = contains(phrase, digits);
 	let splCharsFlag = contains(phrase, splChars);
 
-	if(phrase.length>=8 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag)
+	if(phrase.length>=10 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag)
    		return true;
     else
     	return false; 
