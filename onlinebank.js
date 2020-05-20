@@ -99,8 +99,9 @@ app.post("/View", function(req, res){
 	
 });
 
-app.post("/Deposit", function(req, res){
+app.get("/Deposit", function(req, res){
 	let currentUser = req.session.userid;
+	let userIndex = req.session.userIndex;
 
 	fs.readFile('users.json', (err, data) => {
 		if (err) throw err;
@@ -108,7 +109,7 @@ app.post("/Deposit", function(req, res){
 			let pageStr  = "<!DOCTYPE html>"
 				pageStr += "<html>"
 				pageStr += "	<head>"
-				pageStr += "		<title>DEPOSIT</title>"
+				pageStr += "		<title>Deposit</title>"
 				pageStr += "		<link rel='stylesheet' type='text/css' href='css/bootstrap.min.css'>";
 				pageStr += "	<script>"
 				pageStr += "		function checkAmount(form){"
@@ -127,23 +128,17 @@ app.post("/Deposit", function(req, res){
 				pageStr += "			<div>"
 				pageStr += "				<form action= '/Deposit' method= 'POST' onsubmit= 'return checkAmount()''>"
 				pageStr += "					<div class= 'container'>"
-				pageStr += "						<h1 style='color:white'>DEPOSIT</h1><br><br>"
+				pageStr += "						<h1 style='color:white'>Deposit</h1><br><br>"
 				pageStr += "						<p style='color:white'>Please select an account.</p>"
 				pageStr += "							<div class= 'accounts'>"
 				pageStr += "								<select name = 'Account' placeholder='Account' required>"
 
 				let newData = JSON.parse(data);
-				let k = 0;
 
-				//this for loop counts how many accounts a user has and provides k amount of choices on the drop bar
-				for(let i=0; i<(newData.users.length); i++) {
-					for (let j = 0; j<(newData.users[i].accounts.length); j++){ 	
-						if(newData.users[i].id === currentUser){								
-							pageStr += "<option>" + newData.users[i].accounts[j].name + "</option>";					
-							k = j;	//use k as a carry variable of which account in the arry of accounts to a user
-						}
-					}
-				}	
+				for(let i=0; i<newData.users[userIndex].accounts.length; i++)
+				{
+					pageStr += "<option>" + newData.users[userIndex].accounts[i].name + "</option>";
+				}
 
 				pageStr += "								</select>"
 				pageStr += "							</div>"
@@ -151,38 +146,59 @@ app.post("/Deposit", function(req, res){
 				pageStr += "						<br>"
 				pageStr += "						<p style='color:white'>Please enter the amount of the deposit.</p>"
 				pageStr += "					<div class= 'amount' style ='color:white'>"
-				pageStr += "						<input type='text' id= 'deposit' name='deposit' min= '0' max='9999' value= '' required>"
+				pageStr += "						<input type='number' id= 'deposit' name='withdraw' min= '0' max='9999' value= '' required>"
 				pageStr += "						<br>"
 				pageStr += "						<br>"
 				pageStr += "					</div>"
 				pageStr += "					<div class = submit'>"
 				pageStr += "						<input type='submit' id= 'confirm' name='done' value= 'Confirm'>"
 				pageStr += "					</div>"
-
-
-				//this for loop iterates through a user's accounts and increments their deposit to the account they chose. 
-				for(let i=0; i<(newData.users.length); i++) {
-					for (let j = 0; j<(newData.users[i].accounts.length); j++){
-						if(newData.users[i].id === currentUser){	
-							newData.users[i].accounts[k].initialBalance += req.body.deposit;
-
-
-						}
-					}
-				}
 				pageStr += "					</div>"
 				pageStr += "				</form>"
 				pageStr += "			</div>"
+				pageStr += "		<a href='/'>Return to Homepage</a>"
 				pageStr += "		</body>"
 				pageStr += "</html>"	
 
-
-
-				fs.writeFile('users.json', JSON.stringify(newData), (err) => {
-					if (err) throw err;
-				});
-
 			res.send(pageStr);
+		}
+		
+	});
+
+});
+
+app.post("/Deposit", function(req, res){
+	let currentUser = req.session.userid;
+	let userIndex = req.session.userIndex;
+
+	fs.readFile('users.json', (err, data) => {
+		if (err) throw err;
+		else {
+			let newData = JSON.parse(data);
+
+			let accountName = xssFilters.inHTMLData(req.body.Account);
+			let amount = xssFilters.inHTMLData(req.body.withdraw);
+
+			if(amount === NaN || amount===Infinity || amount<=0)
+			{
+				res.send("Invalid amount selected!");
+				return;
+			}
+			parseInt(amount);
+
+			for(let i=0; i<newData.users[userIndex].accounts.length; i++)
+			{
+				if(accountName === newData.users[userIndex].accounts[i].name)
+				{
+					newData.users[userIndex].accounts[i].initialBalance+=amount;
+				}
+			}
+
+			fs.writeFile('users.json', JSON.stringify(newData), (err) => {
+				if (err) throw err;
+				res.send("Success!<br><a href='/'>Return to Homepage</a><br><br><a href='/Withdraw'>Withdraw again.</a><br>");
+
+			});
 		}
 	});
 });
