@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>DEPOSIT</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<script>
+		function checkAmount(form){
+			amount = form.deposit.value;
+			if (amount < 0 || amount > 9999) {
+			alert('\nPlease enter an amount between 0 and 9999 dollars. ')
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	</script>
+</head>
+<body style = "background: url(https://download.hipwallpaper.com/desktop/1920/1080/39/73/6mVEKW.jpg)">
+<div>
+	<form action= "/Deposit" method= "POST" onsubmit= "return checkAmount()">
+		<div class= "container">
+			<h1 style="color:white">DEPOSIT</h1><br><br>
+			<p style="color:white">Please select an account.</p>
+			<div class= "accounts">
+				<select name= "Account" placeholder= "Account" required><option>Account 1</option><option>Account 2</option><option>Account 3</option></select>
+			</div>
+			<br>
+			<br>
+			<p style="color:white">Please enter the amount of the deposit.</p>
+			<div class= "amount" style ="color:white">
+				$<input type="text" id= "deposit" name="deposit" min= "0" max="9999" value= "" required>
+				<br>
+				<br>
+			</div>
+
+			<div class = "submit">
+				<input type="submit" id= "confirm" name="done" value= "DEPOSIT">
+			</div>
+		</div>
+	</form> 
+</div>
+</body>
+</html>
