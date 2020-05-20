@@ -54,6 +54,7 @@ function isStrongPassword(phrase){
 
 app.post("/View", function(req, res){
 	let currentUser = req.session.userid;
+
 	let pageStr =  "<!DOCTYPE html>";
 		pageStr += "<html>";
 		pageStr += "	<head>";
@@ -74,11 +75,12 @@ app.post("/View", function(req, res){
 
 		for(let i=0; i<(newData.users.length); i++) {
 			for (let j = 0; j<(newData.users[i].accounts.length); j++){
-				console.log(newData.users[i].accounts[j]);
 				if(newData.users[i].id === currentUser){
-					pageStr += "<label for='Account Name'" + " style='color:white'>Account Name " + newData.users[i].accounts[j].name + " </label><br>";
-					pageStr += "<label for='Account Type'" + " style='color:white'>Account Type " + newData.users[i].accounts[j].type + " </label><br>";
-					pageStr += "<label for='Account Balance'" + " style='color:white'>Account Balance " + "$" + newData.users[i].accounts[j].initialBalance + " </label><br><br>";
+					//console.log(newData.users[i].accounts[j]);
+					pageStr += "<label for='Account Name' style='color:white'>Account Name   " + newData.users[i].accounts[j].name + " </label><br>";
+					pageStr += "<label for='Account Type' style='color:white'>Account Type   " + newData.users[i].accounts[j].type + " </label><br>";
+					pageStr += "<label for='Account Balance' style='color:white'>Account Balance   " + "$" + newData.users[i].accounts[j].initialBalance + " </label><br><br>";
+					
 				}
 			}
 		}	
@@ -87,6 +89,7 @@ app.post("/View", function(req, res){
 	pageStr += "		</form>";
 	pageStr	+= "	</body>";
 	pageStr == "</html>";
+
 
 	res.send(pageStr);
 });
