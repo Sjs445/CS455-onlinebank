@@ -53,7 +53,40 @@ function isStrongPassword(phrase){
 
 
 app.post("/View", function(req, res){
-	let accountName = req.body.name;
+	let currentUser = req.session.userid;
+
+	fs.readFile('users.json', (err, data) => {
+		if (err) throw err;
+
+		let newData = JSON.parse(data);
+
+		for(let i=0; i<(newData.users.length); i++) {
+			for (let j = 0; j<(newData.users[i].accounts.length); j++){
+				console.log(newData.users[i].accounts[j]);
+				if(newData.users[i].id === currentUser){
+					let pageStr =  "<!DOCTYPE html>";
+						pageStr += "<html>";
+						pageStr += "	<head>";
+						pageStr += "		<title>View</title>";
+						pageStr += "			<link rel='stylesheet' type='text/css' href='css/bootstrap.min.css'>";
+						pageStr += "			<body style = 'background: url(https://download.hipwallpaper.com/desktop/1920/1080/39/73/6mVEKW.jpg)'>";
+						pageStr += "			</body>";
+						pageStr += "	</head>";
+						pageStr += "	<body>";
+						pageStr += "		<form id='ViewAccounts' action='/View' method='GET'>";
+						pageStr += "			<h1 style='color:white'>View Accounts</h1>";
+						pageStr += "			<label for='Account Name'" + " style='color:white'>Account Name " + newData.users[i].accounts[j].name + " </label><br>";
+						pageStr += "			<label for='Account Type'" + " style='color:white'>Account Type " + newData.users[i].accounts[j].type + " </label><br>";
+						pageStr += "			<label for='Account Balance'" + " style='color:white'>Account Balance " + "$" + newData.users[i].accounts[j].initialBalance + " </label><br><br><br>";
+						pageStr += " 			<a href='/'>Return to Homepage</a><br>";
+						pageStr += "		</form>";
+						pageStr	+= "	</body>";
+						pageStr == "</html>";
+					res.send(pageStr);
+				}
+			}
+		}	
+	});
 });
 
 app.get("/Deposit", function(req, res){
