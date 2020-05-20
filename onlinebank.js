@@ -86,6 +86,37 @@ app.post("/OpenNewAccount", function(req, res){
 	console.log(req.session.userid);
 
 	
+	let filePath = __dirname+"/users.json"
+
+
+	// allLines should read each line separated by "\n"
+	fs.readFile('users.json', (err, data)=>{
+		if (err) throw err;
+
+		// array holds each user's username+password separated by a "\n"
+		let array = data.toString().split("\n");
+
+		
+
+		// iterate through each index (in this case through each user)
+		// and append their account info
+		// check which user is logged on and append the info to that account
+		for (let i = 0; i < array.length-1; ++i){
+			if(req.body.hasClass('loggedin')) {
+				let newLine = array[i]+name+";"+type+";"+initialBalance+";"+"\n";
+
+				// then write to a new file called accounts.json
+				fs.writeFileSync('accounts.json', newLine, {flag: 'a+'}, (err) =>{
+					if (err) throw err;
+				});
+			}
+			else {
+				;
+			}
+				
+		}
+		
+	});
 
 
 	res.send("Account Registerd!<br><a href='/'>Return to Homepage</a><br><br><a href='/OpenNewAccount'>Add Another Account</a><br>");
@@ -155,7 +186,7 @@ app.post("/login", function(req, res) {
 		}
 
 		let newData = JSON.parse(data);
-		
+
 		for(let i=0; i<(newData.users.length); i++)
 		{
 			if(newData.users[i].id === req.body.userid && newData.users[i].password===req.body.password)
