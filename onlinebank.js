@@ -133,18 +133,25 @@ app.get("/register", function(req, res){
 });
 
 app.post("/register", function(req, res){
-	let username = req.body.username;
+	let username = req.body.username;	//	We will need to filter this data before processing
 	let password1 = req.body.password1;
 	let password2 = req.body.password2;
 	
 	if(password1 === password2)
 	{
 		if (isStrongPassword(password2)) {
-
-			fs.writeFile('users.txt', (username+";"+password2+";"+"\n"), {flag: 'a+'}, (err) => {
-				if (err) throw err;
-			})
-			res.send("User created!<br><a href='/'>Return to homepage</a>");
+			let myJson;	//	Declare json object
+			fs.readFile("./users.txt", function(err, data){
+				if(err) throw err;
+				myJson = JSON.parse(data);	//	parse the text file as JSON
+				myJson.users.push({id:username, password:password2, accounts:[]});	//	write back with new account data
+				fs.writeFile('./users.txt', (JSON.stringify(myJson)), (err) => {
+					if (err) throw err;
+					res.send("User created!<br><a href='/'>Return to homepage</a>");
+				})
+				
+			});
+			
 		}
 		else {
 			console.log("Password must meet requirements...");
@@ -175,11 +182,12 @@ app.post("/login", function(req, res) {
 			return;
 		}
 
-		let newData = data.split(";");
+		let newData = JSON.parse(data);
 
-		for(let i=0; i<(newData.length-1); i+=2)
+		for(let i=0; i<(newData.length-1); i++)
 		{
-			if(newData[i]===req.body.userid && newData[i+1]===req.body.password)
+			console.log(newData.users[i].id)
+			if(newData.users[i].id === req.body.userid && newData.users[i].password===req.body.password)
 			{
 				console.log("Authenticated!");
 
