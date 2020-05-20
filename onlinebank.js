@@ -77,11 +77,11 @@ app.post("/OpenNewAccount", function(req, res){
 	let name = req.body.accountName;
 	let type = req.body.accountType;
 	let initialBalance = req.body.initialBalance;
-	let filePath = __dirname+"/users.txt"
+	let filePath = __dirname+"/users.json"
 
 
 	// allLines should read each line separated by "\n"
-	fs.readFile('users.txt', (err, data)=>{
+	fs.readFile('users.json', (err, data)=>{
 		if (err) throw err;
 
 		// array holds each user's username+password separated by a "\n"
@@ -96,8 +96,8 @@ app.post("/OpenNewAccount", function(req, res){
 			if(req.body.hasClass('loggedin')) {
 				let newLine = array[i]+name+";"+type+";"+initialBalance+";"+"\n";
 
-				// then write to a new file called accounts.txt
-				fs.writeFileSync('accounts.txt', newLine, {flag: 'a+'}, (err) =>{
+				// then write to a new file called accounts.json
+				fs.writeFileSync('accounts.json', newLine, {flag: 'a+'}, (err) =>{
 					if (err) throw err;
 				});
 			}
