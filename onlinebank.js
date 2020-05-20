@@ -5,12 +5,23 @@ const express = require("express");
 const fs = require("fs");
 const readline = require("readline");
 const app = express();
-const cookieParser = require("cookie-parser");
+
+// Import client sessions
+const sessions = require('client-sessions');
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 //const csp = require("helmet-csp");
 
-
+// The session settings middleware	
+app.use(sessions({
+	cookieName: 'session',
+	secret: 'some_secret_9000',
+	duration: 180000,
+	activeDuration: 5 * 60 * 1000,
+	httpOnly: true,
+  })); 
+  
 
 function contains(password, allowedChars) {
     for ( let i = 0; i < password.length; i++) {
@@ -37,14 +48,8 @@ function isStrongPassword(phrase){
     	return false; 
 }
 
-app.use(cookieParser());
-
-
-
 //======================================================================
 //Each of these post functions should be related to each bank feature
-
-
 
 
 app.post("/View", function(req, res){
@@ -78,36 +83,9 @@ app.post("/OpenNewAccount", function(req, res){
 	let type = req.body.accountType;
 	let initialBalance = req.body.initialBalance;
 	let filePath = __dirname+"/users.txt"
+	console.log(req.session.userid);
 
-
-	// allLines should read each line separated by "\n"
-	fs.readFile('users.txt', (err, data)=>{
-		if (err) throw err;
-
-		// array holds each user's username+password separated by a "\n"
-		let array = data.toString().split("\n");
-
-		
-
-		// iterate through each index (in this case through each user)
-		// and append their account info
-		// check which user is logged on and append the info to that account
-		for (let i = 0; i < array.length-1; ++i){
-			if(req.body.hasClass('loggedin')) {
-				let newLine = array[i]+name+";"+type+";"+initialBalance+";"+"\n";
-
-				// then write to a new file called accounts.txt
-				fs.writeFileSync('accounts.txt', newLine, {flag: 'a+'}, (err) =>{
-					if (err) throw err;
-				});
-			}
-			else {
-				;
-			}
-				
-		}
-		
-	});
+	
 
 
 	res.send("Account Registerd!<br><a href='/'>Return to Homepage</a><br><br><a href='/OpenNewAccount'>Add Another Account</a><br>");
@@ -165,17 +143,11 @@ app.post("/register", function(req, res){
 });
 
 
-
-// Read from text file of usernames and passwords
-// In this function, I want to add a feature where if the user selects "register on the login page
-// then another webpage will open with the boxes to creae a username and password.
-// So currently the link "should" be http://localhost/4000/login.
-// Then if user clicks on register (still need to implement that), then they will be 
-// redirected to http://localhost/4000/register
 app.post("/login", function(req, res) {
 
 	fs.readFile('./users.json',{encoding:'utf8', flag:'r'}, function(error, data)
 	{
+		//	Still need to sanitize user inputs 
 		if(error)
 		{
 			console.log(error);
@@ -183,19 +155,17 @@ app.post("/login", function(req, res) {
 		}
 
 		let newData = JSON.parse(data);
+		
 		for(let i=0; i<(newData.users.length); i++)
 		{
 			if(newData.users[i].id === req.body.userid && newData.users[i].password===req.body.password)
 			{
 				console.log("Authenticated!");
 
-				let randomNumber=Math.random().toString();
-				randomNumber=randomNumber.substring(2,randomNumber.length);
+				//	Set the cookie session
+				req.session.userid=newData.users[i].id;
 
 
-				// Set the cookie session ID
-				// Date.now() + 180000 sets the expiration date of the cookie 180000 milliseconds (3 mins) from now
-				res.cookie('loggedin',randomNumber, { expires: new Date(Date.now() + 180000), httpOnly: true});
 				res.sendFile(__dirname+"/bank.html");
 				return;
 			}
@@ -209,10 +179,8 @@ app.post("/login", function(req, res) {
 
 app.get("/", function(req, res){
 
-	let cookie = req.cookies['loggedin'];
-
-	//	If the user does not have a login cookie
-	if(cookie === undefined)
+	//	If the user does not have a session
+	if(req.session.userid === undefined)
 	{
 		//	Show them the startup page
 		res.sendFile(__dirname+"/startup.html");
@@ -225,7 +193,7 @@ app.get("/", function(req, res){
 });
 
 app.post("/logout", function(req, res){
-	res.clearCookie('loggedin');
+	req.session.reset();
 	res.send("Logged out!<br><br><a href='/'>Login</a>");
 })
 
