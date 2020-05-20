@@ -54,7 +54,7 @@ function isStrongPassword(phrase){
 
 app.post("/View", function(req, res){
 	let currentUser = req.session.userid;			
-		fs.readFileSync('users.json', (err, data) => {
+		fs.readFile('users.json', (err, data) => {
 			if (err) throw err;
 			else {
 				let pageStr =  "<!DOCTYPE html>";
@@ -75,7 +75,7 @@ app.post("/View", function(req, res){
 					for (let j = 0; j<(newData.users[i].accounts.length); j++){
 						if(newData.users[i].id === currentUser){
 							console.log(newData.users[i].accounts[j]);
-							pageStr  = "<label for='Account Name' style='color:white'>Account Name   " + newData.users[i].accounts[j].name + " </label><br>";
+							pageStr += "<label for='Account Name' style='color:white'>Account Name   " + newData.users[i].accounts[j].name + " </label><br>";
 							pageStr += "<label for='Account Type' style='color:white'>Account Type   " + newData.users[i].accounts[j].type + " </label><br>";
 							pageStr += "<label for='Account Balance' style='color:white'>Account Balance   " + "$" + newData.users[i].accounts[j].initialBalance + " </label><br><br>";
 						}
