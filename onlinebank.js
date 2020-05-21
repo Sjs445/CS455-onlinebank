@@ -76,7 +76,7 @@ app.post("/View", function(req, res){
 					pageStr += "			<h1 style='color:white'>View Accounts</h1>";
 
 				let newData = JSON.parse(data);
-
+				console.log("Accounts");
 				for(let i=0; i<(newData.users.length); i++) {
 					for (let j = 0; j<(newData.users[i].accounts.length); j++){
 						if(newData.users[i].id === currentUser){
@@ -178,19 +178,19 @@ app.post("/Deposit", function(req, res){
 
 			let accountName = xssFilters.inHTMLData(req.body.Account);
 			let amount = xssFilters.inHTMLData(req.body.withdraw);
+			parseInt(amount);
 
 			if(amount === NaN || amount===Infinity || amount<=0)
 			{
 				res.send("Invalid amount selected!");
 				return;
 			}
-			parseInt(amount, 10);
 
 			for(let i=0; i<newData.users[userIndex].accounts.length; i++)
 			{
 				if(accountName === newData.users[userIndex].accounts[i].name)
 				{
-					newData.users[userIndex].accounts[i].initialBalance+=amount;
+					parseInt(newData.users[userIndex].accounts[i].initialBalance)+=amount;
 				}
 			}
 
@@ -500,7 +500,7 @@ app.get("/RemoveAccount", function(req,res){
 				pageStr += "			<div>"
 				pageStr += "				<form action= '/RemoveAccount' method= 'POST'>"
 				pageStr += "					<div class= 'container'>"
-				pageStr += "						<h1 style='color:white'>Transfer</h1><br><br>"
+				pageStr += "						<h1 style='color:white'>Remove Account</h1><br><br>"
 				pageStr += "						<p style='color:white'>Please select account to DELETE.</p>"
 				pageStr += "							<div class= 'accounts'>"
 				pageStr += "								<select name = 'accountDELETE' placeholder='Account' required>"
@@ -566,7 +566,7 @@ app.post("/RemoveAccount", function(req, res){
 			
 		}
 	});
-	res.send("Delete Successful<br><a href='/OpenNewAccount'>Remove Another Account</a><br><a href='/'>Return to Homepage</a><br><br>")
+	res.send("Delete Successful<br><a href='/RemoveAccount'>Remove Another Account</a><br><a href='/'>Return to Homepage</a><br><br>")
 });
 
 //======================================================================
