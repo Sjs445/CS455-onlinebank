@@ -196,7 +196,7 @@ app.post("/Deposit", function(req, res){
 
 			fs.writeFile('users.json', JSON.stringify(newData), (err) => {
 				if (err) throw err;
-				res.send("Success!<br><a href='/'>Return to Homepage</a><br><br><a href='/Deposit'>Deposit again.</a><br>");
+				res.send("Success!<br><a href='/Deposit'>Deposit again.</a><br><a href='/'>Return to Homepage</a><br><br>");
 
 			});
 		}
@@ -303,7 +303,7 @@ app.post("/Withdraw", function(req, res){
 
 			fs.writeFile('users.json', JSON.stringify(newData), (err) => {
 				if (err) throw err;
-				res.send("Success!<br><a href='/'>Return to Homepage</a><br><br><a href='/Withdraw'>Withdraw again.</a><br>");
+				res.send("Success!<br><a href='/Withdraw'>Withdraw again.</a><br><a href='/'>Return to Homepage</a><br><br>");
 
 			});
 		}
@@ -431,7 +431,7 @@ app.post("/Transfer", function(req, res){
 
 			fs.writeFile('users.json', JSON.stringify(newData), (err) => {
 				if (err) throw err;
-				res.send("Success!<br><a href='/'>Return to Homepage</a><br><br><a href='/Transfer'>Transfer again.</a><br>");
+				res.send("Success!<br><a href='/Transfer'>Transfer again.</a><br><a href='/'>Return to Homepage</a><br><br>");
 
 			});
 		}
@@ -479,7 +479,7 @@ app.post("/OpenNewAccount", function(req, res){
 	});
 
 
-	res.send("Account Registerd!<br><a href='/'>Return to Homepage</a><br><br><a href='/OpenNewAccount'>Add Another Account</a><br>");
+	res.send("Account Registerd!<br><a href='/OpenNewAccount'>Add Another Account</a><br><a href='/'>Return to Homepage</a><br><br>");
 });
 
 
@@ -555,6 +555,7 @@ app.post("/RemoveAccount", function(req, res){
 			if(newData.users[i].id === currentUser){
 				for(let i=0; i<newData.users[userIndex].accounts.length; i++) {
 					if(name === newData.users[userIndex].accounts[i].name) {
+
 						delete newData.users[userIndex].accounts[i];
 
 						fs.writeFile('./users.json', (JSON.stringify(newData)), (err) => {
@@ -566,7 +567,7 @@ app.post("/RemoveAccount", function(req, res){
 			
 		}
 	});
-	res.send("Delete Successful<br><a href='/'>Return to Homepage</a><br><br><a href='/OpenNewAccount'>Remove Another Account</a><br>")
+	res.send("Delete Successful<br><a href='/OpenNewAccount'>Remove Another Account</a><br><a href='/'>Return to Homepage</a><br><br>")
 });
 
 //======================================================================
