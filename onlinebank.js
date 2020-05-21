@@ -178,7 +178,7 @@ app.post("/Deposit", function(req, res){
 
 			let accountName = xssFilters.inHTMLData(req.body.Account);
 			let amount = xssFilters.inHTMLData(req.body.withdraw);
-			parseInt(amount);
+			amount=parseFloat(amount);
 
 			if(amount === NaN || amount===Infinity || amount<=0)
 			{
@@ -190,7 +190,9 @@ app.post("/Deposit", function(req, res){
 			{
 				if(accountName === newData.users[userIndex].accounts[i].name)
 				{
-					parseInt(newData.users[userIndex].accounts[i].initialBalance)+=amount;
+					let currentBalance = parseFloat(newData.users[userIndex].accounts[i].initialBalance);
+					currentBalance+=amount;
+					newData.users[userIndex].accounts[i].initialBalance=currentBalance;
 				}
 			}
 
@@ -291,7 +293,7 @@ app.post("/Withdraw", function(req, res){
 				res.send("Invalid amount selected!");
 				return;
 			}
-			parseInt(amount);
+			amount=parseFloat(amount);
 
 			for(let i=0; i<newData.users[userIndex].accounts.length; i++)
 			{
@@ -414,7 +416,7 @@ app.post("/Transfer", function(req, res){
 				res.send("Invalid amount selected!");
 				return;
 			}
-			parseInt(amount);
+			amount=parseFloat(amount);
 
 			for(let i=0; i<newData.users[userIndex].accounts.length; i++)
 			{
@@ -422,9 +424,12 @@ app.post("/Transfer", function(req, res){
 				{
 					if(accountNameFrom === newData.users[userIndex].accounts[i].name && accountNameTo === newData.users[userIndex].accounts[j].name)
 					{
+						let newBalance1 = (parseFloat(newData.users[userIndex].accounts[i].initialBalance)-amount);
+						newData.users[userIndex].accounts[i].initialBalance=newBalance1;
 
-						newData.users[userIndex].accounts[i].initialBalance-=amount;
-						newData.users[userIndex].accounts[j].initialBalance+=amount;
+						newBalance1 = (parseFloat(newData.users[userIndex].accounts[j].initialBalance)+amount);
+
+						newData.users[userIndex].accounts[j].initialBalance=newBalance1;
 					}	
 				}
 			}
@@ -452,7 +457,7 @@ app.post("/OpenNewAccount", function(req, res){
 	let name = xssFilters.inHTMLData(req.body.accountName);
 	let type = xssFilters.inHTMLData(req.body.accountType);
 	let initialBalance = xssFilters.inHTMLData(req.body.initialBalance);
-	parseInt(initialBalance);
+	initialBalance = parseFloat(initialBalance);
 	let filePath = __dirname+"/users.json"
 
 
