@@ -2,6 +2,7 @@
 
 
 Andrew Nomura drew97.nomura@csu.fullerton.edu
+Andrew Ta andrewman8798@csu.fullerton.edu
 
 
 
