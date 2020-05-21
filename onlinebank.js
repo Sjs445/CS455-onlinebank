@@ -310,8 +310,132 @@ app.post("/Withdraw", function(req, res){
 	});
 });
 
+
+
+app.get("/Transfer", function(req, res){
+	let currentUser = req.session.userid;
+	let userIndex = req.session.userIndex;
+
+	fs.readFile('users.json', (err, data) => {
+		if (err) throw err;
+		else {
+			let pageStr  = "<!DOCTYPE html>"
+				pageStr += "<html>"
+				pageStr += "	<head>"
+				pageStr += "		<title>Transfer</title>"
+				pageStr += "		<link rel='stylesheet' type='text/css' href='css/bootstrap.min.css'>";
+				pageStr += "	<script>"
+				pageStr += "		function checkAmount(form){"
+				pageStr += "			amount = form.transfer.value;"
+				pageStr += "			if (amount < 0 || amount > 9999) {"
+				pageStr += "				alert('\nPlease enter an amount between 0 and 9999 dollars. ')"
+				pageStr += "				return false;"
+				pageStr += "			}"
+				pageStr += "			else{"
+				pageStr += "				return true;"
+				pageStr += "			}"
+				pageStr += "		}"
+				pageStr += "	</script>"
+				pageStr += "	</head>"
+				pageStr += "		<body style = 'background: url(https://download.hipwallpaper.com/desktop/1920/1080/39/73/6mVEKW.jpg)'>"
+				pageStr += "			<div>"
+				pageStr += "				<form action= '/Transfer' method= 'POST' onsubmit= 'return checkAmount()''>"
+				pageStr += "					<div class= 'container'>"
+				pageStr += "						<h1 style='color:white'>Transfer</h1><br><br>"
+				pageStr += "						<p style='color:white'>Please select From account.</p>"
+				pageStr += "							<div class= 'accountsFROM'>"
+				pageStr += "								<select name = 'AccountFROM' placeholder='Account' required>"
+
+				let newData = JSON.parse(data);
+
+				for(let i=0; i<newData.users[userIndex].accounts.length; i++)
+				{
+					pageStr += "<option>" + newData.users[userIndex].accounts[i].name + "</option>";
+				}
+
+				pageStr += "								</select>"
+				pageStr += "							</div>"
+				pageStr += "						<p style='color:white'>Please select TO account.</p>"
+				pageStr += "							<div class= 'accountsTo'>"
+				pageStr += "								<select name = 'AccountTO' placeholder='Account' required>"
+
+
+				for(let i=0; i<newData.users[userIndex].accounts.length; i++)
+				{
+					pageStr += "<option>" + newData.users[userIndex].accounts[i].name + "</option>";
+				}
+
+				pageStr += "								</select>"
+				pageStr += "							</div>"
+				pageStr += "						<br>"
+				pageStr += "						<br>"
+				pageStr += "						<p style='color:white'>Please enter the amount of the transfer.</p>"
+				pageStr += "					<div class= 'amount' style ='color:white'>"
+				pageStr += "						<input type='number' id= 'deposit' name='transfer' min= '0' max='9999' value= '' required>"
+				pageStr += "						<br>"
+				pageStr += "						<br>"
+				pageStr += "					</div>"
+				pageStr += "					<div class = submit'>"
+				pageStr += "						<input type='submit' id= 'confirm' name='done' value= 'Confirm'>"
+				pageStr += "					</div>"
+				pageStr += "					</div>"
+				pageStr += "				</form>"
+				pageStr += "			</div>"
+				pageStr += "		<a href='/'>Return to Homepage</a>"
+				pageStr += "		</body>"
+				pageStr += "</html>"	
+
+			res.send(pageStr);
+		}
+		
+	});
+
+});
+
+
+
+
 app.post("/Transfer", function(req, res){
-	
+	let currentUser = req.session.userid;
+	let userIndex = req.session.userIndex;
+
+	fs.readFile('users.json', (err, data) => {
+		if (err) throw err;
+		else {
+			let newData = JSON.parse(data);
+
+			let accountNameFrom = xssFilters.inHTMLData(req.body.AccountFROM);
+			let accountNameTo = xssFilters.inHTMLData(req.body.AccountTO);
+			let amount = xssFilters.inHTMLData(req.body.transfer);
+			let currentBalance = newData.users[userIndex].accounts.initialBalance;
+
+			if(amount === NaN || amount===Infinity || amount<=0)
+			{
+				res.send("Invalid amount selected!");
+				return;
+			}
+			parseInt(amount);
+
+			for(let i=0; i<newData.users[userIndex].accounts.length; i++)
+			{
+				for (let j=0; j<newData.users[userIndex].accounts.length; j++)
+				{
+					if(accountNameFrom === newData.users[userIndex].accounts[i].name && accountNameTo === newData.users[userIndex].accounts[j].name)
+					{
+
+						newData.users[userIndex].accounts[i].initialBalance-=amount;
+						newData.users[userIndex].accounts[j].initialBalance+=amount;
+					}	
+				}
+			}
+
+			fs.writeFile('users.json', JSON.stringify(newData), (err) => {
+				if (err) throw err;
+				res.send("Success!<br><a href='/'>Return to Homepage</a><br><br><a href='/Transfer'>Transfer again.</a><br>");
+
+			});
+		}
+	});;
 });
 
 //For this I (Drew) was thinking of appending the user's account name 
@@ -328,7 +452,7 @@ app.post("/OpenNewAccount", function(req, res){
 	let name = xssFilters.inHTMLData(req.body.accountName);
 	let type = xssFilters.inHTMLData(req.body.accountType);
 	let initialBalance = xssFilters.inHTMLData(req.body.initialBalance);
-
+	parseInt(initialBalance);
 	let filePath = __dirname+"/users.json"
 
 
@@ -344,7 +468,12 @@ app.post("/OpenNewAccount", function(req, res){
 			if(newData.users[i].id === currentUser)
 			{
 				console.log(newData);
-				newData.users[i].accounts.push({name, type, initialBalance});
+				newData.users[i].accounts.push({
+					"name": name,
+					"type": type,
+					initialBalance: initialBalance
+				} )
+				//newData.users[i].accounts.push({name, type, initialBalance});
 				fs.writeFile('./users.json', (JSON.stringify(newData)), (err) => {
 					if (err) throw err;
 				});
