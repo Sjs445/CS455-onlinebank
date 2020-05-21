@@ -339,7 +339,7 @@ app.get("/Transfer", function(req, res){
 				pageStr += "	</head>"
 				pageStr += "		<body style = 'background: url(https://download.hipwallpaper.com/desktop/1920/1080/39/73/6mVEKW.jpg)'>"
 				pageStr += "			<div>"
-				pageStr += "				<form action= '/Transfer' method= 'POST' onsubmit= 'return checkAmount()''>"
+				pageStr += "				<form action= '/Transfer' method= 'POST' onsubmit= 'return checkAmount()'>"
 				pageStr += "					<div class= 'container'>"
 				pageStr += "						<h1 style='color:white'>Transfer</h1><br><br>"
 				pageStr += "						<p style='color:white'>Please select From account.</p>"
@@ -468,12 +468,8 @@ app.post("/OpenNewAccount", function(req, res){
 			if(newData.users[i].id === currentUser)
 			{
 				console.log(newData);
-				newData.users[i].accounts.push({
-					"name": name,
-					"type": type,
-					"initialBalance": initialBalance
-				} )
-				//newData.users[i].accounts.push({name, type, initialBalance});
+				newData.users[i].accounts.push({ "name": name, "type": type, "initialBalance": initialBalance });
+				//newData.users[i].accounts.push({ "name": name, "type": type, "initialBalance": initialBalance });
 				fs.writeFile('./users.json', (JSON.stringify(newData)), (err) => {
 					if (err) throw err;
 				});
@@ -487,8 +483,90 @@ app.post("/OpenNewAccount", function(req, res){
 });
 
 
+app.get("/RemoveAccount", function(req,res){
+	let currentUser = req.session.userid;
+	let userIndex = req.session.userIndex;
+
+	fs.readFile('users.json', (err, data) => {
+		if (err) throw err;
+		else {
+			let pageStr  = "<!DOCTYPE html>"
+				pageStr += "<html>"
+				pageStr += "	<head>"
+				pageStr += "		<title>RemoveAccount</title>"
+				pageStr += "		<link rel='stylesheet' type='text/css' href='css/bootstrap.min.css'>";
+				pageStr += "	</head>"
+				pageStr += "		<body style = 'background: url(https://download.hipwallpaper.com/desktop/1920/1080/39/73/6mVEKW.jpg)'>"
+				pageStr += "			<div>"
+				pageStr += "				<form action= '/RemoveAccount' method= 'POST'>"
+				pageStr += "					<div class= 'container'>"
+				pageStr += "						<h1 style='color:white'>Transfer</h1><br><br>"
+				pageStr += "						<p style='color:white'>Please select account to DELETE.</p>"
+				pageStr += "							<div class= 'accounts'>"
+				pageStr += "								<select name = 'accountDELETE' placeholder='Account' required>"
+
+				let newData = JSON.parse(data);
+
+				for(let i=0; i<newData.users[userIndex].accounts.length; i++)
+				{
+					pageStr += "<option>" + newData.users[userIndex].accounts[i].name + "</option>";
+				}
+
+				pageStr += "								</select>"
+				pageStr += "							</div>"
+				pageStr += "						<br>"
+				pageStr += "						<br>"
+				pageStr += "						<br>"
+				pageStr += "						<br>"
+				pageStr += "					</div>"
+				pageStr += "					<div class = submit'>"
+				pageStr += "						<input type='submit' id= 'confirm' name='done' value= 'Delete'>"
+				pageStr += "					</div>"
+				pageStr += "					</div>"
+				pageStr += "				</form>"
+				pageStr += "			</div>"
+				pageStr == "		<a href='/RemoveAccount'>Remove Another Account</a><br><br><br>"
+				pageStr += "		<a href='/'>Return to Homepage</a>"
+				pageStr += "		</body>"
+				pageStr += "</html>"	
+
+			res.send(pageStr);
+		}
+	});
+
+});
+
+
+
+
 app.post("/RemoveAccount", function(req, res){
-	
+	let currentUser = req.session.userid;
+	let userIndex = req.session.userIndex;
+	let name = xssFilters.inHTMLData(req.body.accountDELETE);
+
+
+	fs.readFile('users.json', (err, data) => {
+		if (err) throw err;
+
+		let newData = JSON.parse(data);
+		// iterate through each index (in this case through each user)
+		// and append their account info
+		// check which user is logged on and append the info to that account
+		for(let i=0; i<(newData.users.length); i++) {
+			if(newData.users[i].id === currentUser){
+				for(let i=0; i<newData.users[userIndex].accounts.length; i++) {
+					if(name === newData.users[userIndex].accounts[i].name) {
+						delete newData.users[userIndex].accounts[i];
+
+						fs.writeFile('./users.json', (JSON.stringify(newData)), (err) => {
+							if (err) throw err;
+						});
+					}
+				}	
+			}
+			
+		}
+	});
 });
 
 //======================================================================
