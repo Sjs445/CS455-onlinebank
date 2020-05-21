@@ -7,7 +7,7 @@ Andrew Ta andrewman8798@csu.fullerton.edu
 
 Shane Spangenberg sjs445@csu.fullerton.edu
 
-
+Tuan Lai tlai23@csu.fullerton.edu
 
 
 
