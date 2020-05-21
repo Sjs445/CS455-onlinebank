@@ -471,7 +471,7 @@ app.post("/OpenNewAccount", function(req, res){
 				newData.users[i].accounts.push({
 					"name": name,
 					"type": type,
-					initialBalance: initialBalance
+					"initialBalance": initialBalance
 				} )
 				//newData.users[i].accounts.push({name, type, initialBalance});
 				fs.writeFile('./users.json', (JSON.stringify(newData)), (err) => {
