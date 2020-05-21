@@ -555,7 +555,7 @@ app.post("/RemoveAccount", function(req, res){
 			if(newData.users[i].id === currentUser){
 				for(let i=0; i<newData.users[userIndex].accounts.length; i++) {
 					if(name === newData.users[userIndex].accounts[i].name) {
-						delete newData.users[userIndex].accounts[i];
+						newData.users[userIndex].accounts.splice(i, 1);
 
 						fs.writeFile('./users.json', (JSON.stringify(newData)), (err) => {
 							if (err) throw err;
