@@ -184,7 +184,7 @@ app.post("/Deposit", function(req, res){
 				res.send("Invalid amount selected!");
 				return;
 			}
-			parseInt(amount);
+			parseInt(amount, 10);
 
 			for(let i=0; i<newData.users[userIndex].accounts.length; i++)
 			{
@@ -196,12 +196,14 @@ app.post("/Deposit", function(req, res){
 
 			fs.writeFile('users.json', JSON.stringify(newData), (err) => {
 				if (err) throw err;
-				res.send("Success!<br><a href='/'>Return to Homepage</a><br><br><a href='/Withdraw'>Withdraw again.</a><br>");
+				res.send("Success!<br><a href='/'>Return to Homepage</a><br><br><a href='/Deposit'>Deposit again.</a><br>");
 
 			});
 		}
 	});
 });
+
+
 
 app.get("/Withdraw", function(req, res){
 	let currentUser = req.session.userid;
@@ -250,7 +252,7 @@ app.get("/Withdraw", function(req, res){
 				pageStr += "						<br>"
 				pageStr += "						<p style='color:white'>Please enter the amount of the withdraw.</p>"
 				pageStr += "					<div class= 'amount' style ='color:white'>"
-				pageStr += "						<input type='text' id= 'deposit' name='withdraw' min= '0' max='9999' value= '' required>"
+				pageStr += "						<input type='number' id= 'deposit' name='withdraw' min= '0' max='9999' value= '' required>"
 				pageStr += "						<br>"
 				pageStr += "						<br>"
 				pageStr += "					</div>"
@@ -282,8 +284,9 @@ app.post("/Withdraw", function(req, res){
 
 			let accountName = xssFilters.inHTMLData(req.body.Account);
 			let amount = xssFilters.inHTMLData(req.body.withdraw);
+			let currentBalance = newData.users[userIndex].accounts.initialBalance;
 
-			if(amount === NaN || amount===Infinity || amount<=0)
+			if(amount === NaN || amount===Infinity || amount<=0 || (currentBalance-amount < 0))
 			{
 				res.send("Invalid amount selected!");
 				return;
