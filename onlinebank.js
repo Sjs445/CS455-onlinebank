@@ -525,7 +525,6 @@ app.get("/RemoveAccount", function(req,res){
 				pageStr += "					</div>"
 				pageStr += "				</form>"
 				pageStr += "			</div>"
-				pageStr == "		<a href='/RemoveAccount'>Remove Another Account</a><br><br><br>"
 				pageStr += "		<a href='/'>Return to Homepage</a>"
 				pageStr += "		</body>"
 				pageStr += "</html>"	
@@ -567,6 +566,7 @@ app.post("/RemoveAccount", function(req, res){
 			
 		}
 	});
+	res.send("Delete Successful<br><a href='/'>Return to Homepage</a><br><br><a href='/OpenNewAccount'>Remove Another Account</a><br>")
 });
 
 //======================================================================
